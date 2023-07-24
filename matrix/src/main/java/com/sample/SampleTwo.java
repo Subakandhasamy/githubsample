@@ -1,4 +1,4 @@
-package sample;
+package com.sample;
 
 public class SampleTwo {
   public static int subExample(int data1, int data2){
