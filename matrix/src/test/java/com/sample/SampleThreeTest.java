@@ -1,7 +1,6 @@
 package com.sample;
 
 import org.junit.jupiter.api.Test;
-import sample.SampleThree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

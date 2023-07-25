@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+group 'com.githubactions'
+version '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+jacoco {
+    toolVersion = "0.8.9"
+    reportsDirectory = file("$buildDir/github/" + System.getenv("ARTIFACT_NAME"))
+    }
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+test{
+    useJUnitPlatform()
+    reports.junitXml.destination = file("$buildDir/github/" + System.getenv("ARTIFACT_NAME"))
+}
+
+test.finalizedBy jacocoTestReport
