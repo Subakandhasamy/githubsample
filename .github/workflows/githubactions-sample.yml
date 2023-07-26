@@ -21,10 +21,44 @@ env:
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 jobs:
-  test-case-run:
-
+  split-testcases:
     runs-on: ubuntu-latest
+    outputs:
+      SHARD_ONE: ${{ steps.shard.outputs.SHARD_ONE }}
+      SHARD_TWO: ${{ steps.shard.outputs.SHARD_TWO }}
+      SHARD_THREE: ${{ steps.shard.outputs.SHARD_THREE }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: IntegrationClass folders sharding
+        id: shard
+        run: |
+          paths=($(find "./matrix/src/test/java/com/sample" -maxdepth 1 -mindepth 1 -type d))
+          echo "Found_paths0::$paths"        
+          size=$((${#paths[@]}/2))
+          echo "size::$size"
+          splitOne=("${paths[@]:0:$size}")
+          splitTwo=("${paths[@]:$size:$size}")
+          splitThree=("${paths[@]:$(($size*2))}”)
+          str=./matrix/src/test/java/
+          for name in ${splitOne[@]};  do name=${name//"$str"/}; name=${name//\//.}; name=${name//../}; shard_one=$shard_one" --tests \""${name}.*\"  ; done
+          for name in ${splitTwo[@]};  do name=${name//"$str"/}; name=${name//\//.}; name=${name//../}; shard_two=$shard_two" --tests \""${name}.*\"  ; done
+          for name in ${splitThree[@]};  do name=${name//"$str"/}; name=${name//\//.}; name=${name//../}; shard_three=$shard_three" --tests \""${name}.*\"  ; done
+          echo "SHARD_ONE=$shard_one" >> "$GITHUB_OUTPUT"
+          echo "SHARD_TWO=$shard_two" >> "$GITHUB_OUTPUT"
+          echo "SHARD_THREE=$shard_three" >> "$GITHUB_OUTPUT"
 
+  test-case-run:
+    runs-on: ubuntu-latest
+    needs: [split-testcases]
+    strategy:
+      fail-fast: false
+      matrix:
+        test-path: [ "shard_one", "shard_two", "shard_three" ]
+    env:
+      ARTIFACT_NAME: ${{ matrix.test-path }}
+      SHARD_ONE: ${{needs.split-testcases.SHARD_ONE}}
+      SHARD_TWO: ${{needs.split-testcases.SHARD_TWO}}
+      SHARD_THREE: ${{needs.split-testcases.SHARD_THREE}}
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -40,13 +74,20 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 7.4
-    - name: Run sample test cases
-      run: ./gradlew cleanTest :matrix:test
+    - name: Run sample test-cases one
+      if: ${{ matrix.test-path == 'shard_one' }}
+      run: ./gradlew cleanTest :matrix:test ${{ env.SHARD_ONE }}  #./gradlew cleanTest :matrix:test --tests "com.sample.one.SampleOneTest"
+    - name: Run sample test-cases two
+      if: ${{ matrix.test-path == 'shard_two' }}
+      run: ./gradlew cleanTest :matrix:test ${{ env.SHARD_TWO }}
+    - name: Run sample test-cases three
+      if: ${{ matrix.test-path == 'shard_three' }}
+      run: ./gradlew cleanTest :matrix:test ${{ env.SHARD_THREE }}
     - name: Upload coverage for matrix module
       uses: actions/upload-artifact@v2
       with:
         name: test-case reports
-        path: matrix/build
+        path: matrix/build/github
 
   code-quality:
     runs-on: ubuntu-latest
@@ -66,7 +107,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: test-case reports
-          path: sample/coverage
+          path: matrix/build/github
       - name: Display structure of downloaded files
         run: ls -R
       - name: Cache SonarQube packages

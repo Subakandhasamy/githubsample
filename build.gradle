@@ -29,8 +29,8 @@ sonarqube {
 		property "sonar.projectName", "CICD"
 		property "sonar.host.url", "https://e1c9-2406-7400-c4-f6d2-b861-d280-eeff-7ba5.ngrok-free.app"
 		property "sonar.token", "squ_3650cb7077bf965527a41502c66bd838095d80f6"
-		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.junit.reportPaths", "build/reports/tests/test"
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/github/shard_one/test/jacocoTestReport.xml, build/github/shard_two/test/jacocoTestReport.xml, build/github/shard_three/test/jacocoTestReport.xml"
+		property "sonar.junit.reportPaths", "build/github/shard_one, build/github/shard_two, build/github/shard_three"
 
 	}
 }
