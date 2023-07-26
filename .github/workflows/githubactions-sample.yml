@@ -38,7 +38,7 @@ jobs:
           echo "size::$size"
           splitOne=("${paths[@]:0:$size}")
           splitTwo=("${paths[@]:$size:$size}")
-          splitThree=("${paths[@]:$(($size*2))}”)
+          splitThree=("${paths[@]:$(($size*2))}")
           str=./matrix/src/test/java/
           for name in ${splitOne[@]};  do name=${name//"$str"/}; name=${name//\//.}; name=${name//../}; shard_one=$shard_one" --tests \""${name}.*\"  ; done
           for name in ${splitTwo[@]};  do name=${name//"$str"/}; name=${name//\//.}; name=${name//../}; shard_two=$shard_two" --tests \""${name}.*\"  ; done
