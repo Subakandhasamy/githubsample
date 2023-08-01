@@ -1,5 +1,6 @@
-package com.sample;
+package com.sample.two;
 
+import com.sample.two.SampleTwo;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

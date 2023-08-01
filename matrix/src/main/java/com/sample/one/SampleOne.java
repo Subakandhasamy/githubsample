@@ -1,4 +1,4 @@
-package com.sample;
+package com.sample.one;
 
 public class SampleOne {
   public static int addExample(int data1, int data2){

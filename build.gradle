@@ -27,14 +27,15 @@ sonarqube {
 
 		property "sonar.projectKey", "CICD"
 		property "sonar.projectName", "CICD"
-		property "sonar.host.url", "http://192.168.0.102:9000"
+		property "sonar.host.url", "https://a43f-2406-7400-c4-2ae7-8d38-4e6c-83a1-689.ngrok-free.app"
 		property "sonar.token", "squ_3650cb7077bf965527a41502c66bd838095d80f6"
-		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.junit.reportPaths", "build/reports/tests/test"
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/github/shard_one/test/jacocoTestReport.xml, build/github/shard_two/test/jacocoTestReport.xml, build/github/shard_three/test/jacocoTestReport.xml"
+		property "sonar.junit.reportPaths", "build/github/shard_one, build/github/shard_two, build/github/shard_three"
 
 	}
 }
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
 

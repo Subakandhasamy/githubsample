@@ -1,4 +1,4 @@
-package com.sample;
+package com.sample.three;
 
 public class SampleThree {
   public static int divExample(int data1, int data2){
